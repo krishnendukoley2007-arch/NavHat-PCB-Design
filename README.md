@@ -47,5 +47,5 @@ piezo buzzers for real-time obstacle detection and audio alerts.
 - [x] Schematic capture + ERC validated
 - [x] PCB routing (autoroute, 0 unrouted nets)
 - [x] 3D render
-- [ ] KiCad rebuild
-- [ ] Gerber export
+- [x] KiCad rebuild
+- [x] Gerber export
