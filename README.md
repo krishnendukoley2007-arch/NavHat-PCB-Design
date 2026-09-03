@@ -14,13 +14,13 @@
 
 **NavHat PRO** is an open-source, multi-node wearable cyber-physical assistive device engineered to give visually impaired users real-time spatial awareness, obstacle warning, and contextual intelligence.
 
-[⚡ Quickstart (5 Mins)](#-5-minute-quickstart-guide) • [📐 System Architecture](#-system-architecture) • [🛠 Hardware & PCB](#-hardware-architecture--pcb-design) • [🧠 5 AI Modes](#-5-intelligent-operating-modes) • [🔧 Firmware Guide](#-firmware-guide)
+[⚡ 5-Minute Quickstart](#-5-minute-quickstart-guide) • [📐 System Architecture](#-system-architecture) • [🛠 Hardware & BOM](#-hardware-architecture--pcb-design) • [🧠 5 AI Modes](#-5-intelligent-operating-modes) • [🔧 Firmware Guide](#-firmware-guide) • [📚 Full Documentation](#-documentation-index)
 
 ---
 
 ### 🌟 Hardware Gallery
 
-| 🛰️ 3D PCB Assembly Render | 🔌 Schematic Diagram |
+| 🛰️ 3D PCB Assembly Render | 🔌 Circuit Schematic Diagram |
 | :---: | :---: |
 | <img src="hardware/pcb/pcb_3d_render.png" width="440" alt="NavHat 3D PCB Render"/> | <img src="hardware/pcb/schematic.png" width="440" alt="NavHat Schematic"/> |
 | **Top PCB Trace Layout (2-Layer)** | **Custom Hardware Headwear / Rig** |
@@ -30,40 +30,19 @@
 
 ---
 
-## 📑 Table of Contents
-- [🌟 System Overview](#-system-overview)
-- [📐 System Architecture](#-system-architecture)
-- [🛠 Hardware Architecture & PCB Design](#-hardware-architecture--pcb-design)
-  - [Power Chain & Voltage Protection](#power-chain--voltage-protection)
-  - [Bill of Materials (BOM)](#bill-of-materials-bom)
-  - [Microcontroller Pinout Mapping](#microcontroller-pinout-mapping)
-- [🔧 Firmware Guide](#-firmware-guide)
-  - [1. ESP32 Sensor Node](#1-esp32-sensor-node-firmware)
-  - [2. ESP32-CAM Video Node (v18)](#2-esp32-cam-video-node-v18)
-- [🧠 NavHat PRO v6.0 AI Vision Host System](#-navhat-pro-v60-ai-vision-host-system)
-  - [5 Intelligent Operating Modes](#-5-intelligent-operating-modes)
-  - [Threat Scoring & Time-to-Collision Formula](#-threat-scoring--time-to-collision-ttc)
-  - [3D Stereo Spatial Audio & Emotion Profiles](#-3d-stereo-spatial-audio--emotion-tones)
-- [📁 Repository Structure](#-repository-structure)
-- [⚡ 5-Minute Quickstart Guide](#-5-minute-quickstart-guide)
-- [⌨️ Keyboard Hotkeys & Controls](#-keyboard-hotkeys--controls)
-- [❓ Troubleshooting & FAQ](#-troubleshooting--faq)
+## 📚 Documentation Index
 
----
-
-## 🌟 System Overview
-
-Traditional mobility canes only detect physical hazards at ground level directly in front of the user. **NavHat PRO** solves this with a **dual-layer cyber-physical architecture**:
-
-1. **Hardware Layer (Ultra-Low Latency Proximity Guard)**:
-   - Custom ESP32 PCB with **3× HC-SR04 ultrasonic rangefinders** covering a $180^\circ$ forward/lateral arc.
-   - Dual **piezo buzzers** providing directional pitch and frequency-modulated haptic audio warnings in $<10\text{ ms}$.
-   - Hardware level-shifters and dedicated LDO regulator ensuring clean power and signal integrity.
-
-2. **Edge AI Vision Layer (Cognitive Context & Guidance)**:
-   - Wireless **ESP32-CAM video node** streaming low-latency grayscale/JPEG frames over WiFi.
-   - Host Python AI engine running **YOLOv11** real-time object tracking, **Farneback optical flow**, and **LLaVA-7B multimodal VLM**.
-   - **Microsoft Edge Neural TTS** delivering 3D binaural stereo audio panned directly to the direction of obstacles.
+| Guide / Manual | Description | Link |
+| :--- | :--- | :---: |
+| **🏛️ Deep Architecture** | Distributed multi-node topology, FreeRTOS core pinning & latency budgets | [Read Architecture](docs/ARCHITECTURE.md) |
+| **🧠 5 AI Modes Manual** | Mathematical threat formulation, Bag-of-Words cosine deduplication & 5-zone logic | [Read AI Modes](docs/AI_MODES_DEEP_DIVE.md) |
+| **📡 REST API Reference** | OpenAPI / JSON specifications for `/distances`, `/status`, `/stream`, `/debug` | [Read API Specs](docs/API_REFERENCE.md) |
+| **📋 Bill of Materials** | Full component listing with supplier part numbers and estimated unit costs | [Read BOM](hardware/BOM.md) |
+| **🔌 Wiring & Schematics** | Step-by-step breadboard & soldering guide with $1\text{k}\Omega/2\text{k}\Omega$ voltage dividers | [Read Wiring Guide](hardware/WIRING_GUIDE.md) |
+| **🏭 Gerber & PCB Fab** | PCB ordering guidelines for JLCPCB / PCBWay (2-layer, $1\text{oz}$ Cu, ENIG) | [Read Gerber Guide](hardware/GERBER_INSTRUCTIONS.md) |
+| **🖨️ 3D Enclosure Specs** | 3D printed cap brim mount, camera gimbal angles, and PETG print settings | [Read 3D Print Specs](hardware/CASE_3D_PRINTING.md) |
+| **⚡ Firmware Architecture** | Embedded FreeRTOS tasks, DMA capture, and calibration utilities | [Read Firmware Guide](firmware/README.md) |
+| **👁️ Vision System Guide** | YOLO tracking, Edge-TTS audio mixer, and diagnostic test scripts | [Read Vision Guide](vision_system/README.md) |
 
 ---
 
@@ -135,54 +114,26 @@ flowchart TB
 
 ---
 
-### Bill of Materials (BOM)
+### Bill of Materials Summary
 
-| Component | Designator | Description / Value | Qty |
-| :--- | :--- | :--- | :---: |
-| **Microcontroller 1** | U1 | ESP32 Dev Module (ESP-WROOM-32) | 1 |
-| **Microcontroller 2** | CAM1 | AI-Thinker ESP32-CAM + OV7670 / OV2640 Module | 1 |
-| **Ultrasonic Sensors** | US_F, US_L, US_R | HC-SR04 Ultrasonic Distance Sensors | 3 |
-| **Piezo Transducers** | BUZZ_L, BUZZ_R | Passive Piezo Buzzers ($2\text{ kHz} - 4\text{ kHz}$) | 2 |
-| **Voltage Regulator** | VR1 | LD1117 SOT-223 3.3V Low-Dropout Regulator | 1 |
-| **Resistors (Divider)** | R1, R2, R3 | $1\text{ k}\Omega \pm 1\%$ 0805 SMD / Through-hole | 3 |
-| **Resistors (Divider)** | R4, R5, R6 | $2\text{ k}\Omega \pm 1\%$ 0805 SMD / Through-hole | 3 |
-| **Capacitors** | C1, C2 | $10\mu\text{F}$ 16V Ceramic / Tantalum Capacitors | 2 |
-| **Power Management** | PWR | TP4056 LiPo Charger + 5V Boost Converter | 1 |
-| **Battery** | BAT | 3.7V 18650 or 1200mAh LiPo Cell | 1 |
+| Component | Designator | Description / Value | Qty | Cost |
+| :--- | :--- | :--- | :---: | :---: |
+| **ESP32 Dev Module** | U1 | Dual-core 240MHz, 4MB Flash | 1 | $3.50 |
+| **ESP32-CAM Board** | CAM1 | AI-Thinker Module + OV7670 / OV2640 | 1 | $4.80 |
+| **Ultrasonic Sensors** | US_F, US_L, US_R | HC-SR04 Ultrasonic Sonar Modules | 3 | $2.70 |
+| **Piezo Transducers** | BUZZ_L, BUZZ_R | Passive Piezo Buzzers ($2\text{kHz}-4\text{kHz}$) | 2 | $0.80 |
+| **Linear Regulator** | VR1 | LD1117 SOT-223 3.3V LDO | 1 | $0.35 |
+| **Passives & Diodes** | R1-R6, C1-C2 | Dividers ($1\text{k}\Omega/2\text{k}\Omega$) & $10\mu\text{F}$ caps | 8 | $0.28 |
+| **Power System** | PWR, BAT | TP4056 + 5V Boost + 3.7V LiPo Cell | 3 | $4.90 |
 
----
-
-### Microcontroller Pinout Mapping
-
-#### ESP32 Sensor Node Pinout
-| ESP32 Pin | Connected Device | Function | Signal Voltage |
-| :--- | :--- | :--- | :---: |
-| **GPIO 13** | HC-SR04 Front | Trigger Pulse | 3.3V |
-| **GPIO 18** | HC-SR04 Front | Echo Return (via $1\text{k}\Omega/2\text{k}\Omega$ Divider) | 3.3V conditioned |
-| **GPIO 14** | HC-SR04 Left | Trigger Pulse | 3.3V |
-| **GPIO 33** | HC-SR04 Left | Echo Return (via $1\text{k}\Omega/2\text{k}\Omega$ Divider) | 3.3V conditioned |
-| **GPIO 19** | HC-SR04 Right | Trigger Pulse | 3.3V |
-| **GPIO 23** | HC-SR04 Right | Echo Return (via $1\text{k}\Omega/2\text{k}\Omega$ Divider) | 3.3V conditioned |
-| **GPIO 25** | Left Piezo Buzzer | LEDC PWM Tone Generation | 3.3V PWM |
-| **GPIO 4** | Right Piezo Buzzer | LEDC PWM Tone Generation | 3.3V PWM |
-
-#### ESP32-CAM Node Pinout
-| Function | GPIO Pin | Function | GPIO Pin |
-| :--- | :---: | :--- | :---: |
-| **Camera PWDN** | GPIO 32 | **Camera Y2 (D0)** | GPIO 5 |
-| **Camera XCLK** | GPIO 0 (16MHz) | **Camera Y3 (D1)** | GPIO 18 |
-| **Camera PCLK** | GPIO 22 | **Camera Y4 (D2)** | GPIO 19 |
-| **Camera VSYNC**| GPIO 25 | **Camera Y5 (D3)** | GPIO 21 |
-| **Camera HREF** | GPIO 23 | **Camera Y6 (D4)** | GPIO 36 |
-| **Camera SIOD** | GPIO 26 | **Camera Y7 (D5)** | GPIO 39 |
-| **Camera SIOC** | GPIO 27 | **Camera Y8 (D6)** | GPIO 34 / Y9: GPIO 35 |
+👉 *For full component part numbers and supplier links, see [hardware/BOM.md](hardware/BOM.md).*
 
 ---
 
 ## 🔧 Firmware Guide
 
 ### 1. ESP32 Sensor Node Firmware
-Located at [`firmware/sensor_node/sensor_node.ino`](file:///c:/Users/krish/Downloads/NavHat-PCB-Design-main/firmware/sensor_node/sensor_node.ino).
+Located at [`firmware/sensor_node/sensor_node.ino`](firmware/sensor_node/sensor_node.ino).
 
 ```text
   0 cm               30 cm                              70 cm
@@ -192,12 +143,12 @@ Located at [`firmware/sensor_node/sensor_node.ino`](file:///c:/Users/krish/Downl
      @ 2500 Hz                  @ 1800 Hz
 ```
 
-* **Median Ghost Echo Rejection**: Takes 3 rapid readings separated by $500\mu\text{s}$ blanking delays and computes the mathematical median to discard acoustic reflections:
+* **Median Ghost Echo Rejection**: Samples 3 rapid pulses with $500\mu\text{s}$ blanking delays to discard acoustic multipath noise:
   $$d_{\text{filtered}} = \text{median}(d_1, d_2, d_3)$$
 * **Non-Blocking Buzzer Intervals**:
   - **$\text{Distance} < 30\text{ cm}$ (CRITICAL)**: Continuous $2500\text{ Hz}$ tone fired on both buzzers simultaneously.
-  - **$30\text{ cm} \le \text{Distance} < 70\text{ cm}$ (CLOSE)**: Dynamic pulse beeping ($1800\text{ Hz}$) where interval scales linearly ($100\text{ ms}$ at $30\text{ cm} \rightarrow 600\text{ ms}$ at $70\text{ cm}$).
-  - **$\text{Distance} \ge 70\text{ cm}$ (CLEAR)**: Completely silent.
+  - **$30\text{ cm} \le \text{Distance} < 70\text{ cm}$ (CLOSE)**: Dynamic pulse beeping ($1800\text{ Hz}$) scaling from $100\text{ ms}$ (at $30\text{ cm}$) to $600\text{ ms}$ (at $70\text{ cm}$).
+  - **$\text{Distance} \ge 70\text{ cm}$ (CLEAR)**: Silent.
 * **REST HTTP Endpoints**:
   - `GET /distances` $\rightarrow$ JSON `{"front": 42.1, "left": 120.0, "right": 84.5}` (CORS enabled).
   - `GET /status` $\rightarrow$ `NAVHAT_SENSOR_OK`.
@@ -206,26 +157,20 @@ Located at [`firmware/sensor_node/sensor_node.ino`](file:///c:/Users/krish/Downl
 ---
 
 ### 2. ESP32-CAM Video Node (v18)
-Located at [`firmware/camera_node/camera_node.ino`](file:///c:/Users/krish/Downloads/NavHat-PCB-Design-main/firmware/camera_node/camera_node.ino).
+Located at [`firmware/camera_node/camera_node.ino`](firmware/camera_node/camera_node.ino).
 
-* **Direct Grayscale Acquisition (`PIXFORMAT_GRAYSCALE`)**: OV7670 captures frames in raw grayscale, bypassing heavy onboard Bayer filtering.
-* **Software JPEG Compression (`fmt2jpg` q=80)**: Encodes frames on Core 1 with 3 framebuffer queues (`fb_count=3`) for maximum frame rates.
+* **Direct Grayscale Acquisition (`PIXFORMAT_GRAYSCALE`)**: Direct OV7670 grayscale capture for maximum throughput.
+* **Software JPEG Compression (`fmt2jpg` q=80)**: Encodes frames on FreeRTOS Core 1 with 3 framebuffer queues (`fb_count=3`).
 * **Resolution Switching**:
   - **QQVGA ($160\times 120$)**: Default ultra-low latency stream ($\approx 30\text{ FPS}$).
   - **QVGA ($320\times 240$)**: High-detail mode toggled dynamically via `/res?v=qvga`.
-* **Embedded Cyber-HUD Web Dashboard**: Hosts a responsive browser UI on port 80 with live client telemetry (FPS, dropped frames, free heap, RSSI, poll latency, uptime), CSS contrast/brightness sliders, and night vision presets.
-* **REST Endpoints**:
-  - `GET /` $\rightarrow$ Embedded Cyberpunk Web UI
-  - `GET /stream` $\rightarrow$ Multipart MJPEG stream
-  - `GET /debug` $\rightarrow$ Real-time telemetry JSON
-  - `GET /res?v=qqvga|qvga` $\rightarrow$ Frame size switch
-  - mDNS: `http://navhat-cam.local`
+* **Embedded Cyber-HUD Web Dashboard**: Hosts a live browser UI on port 80 with telemetry stats, CSS contrast/brightness sliders, and night presets.
 
 ---
 
 ## 🧠 NavHat PRO v6.0 AI Vision Host System
 
-Located at [`vision_system/navhat_vision.py`](file:///c:/Users/krish/Downloads/NavHat-PCB-Design-main/vision_system/navhat_vision.py).
+Located at [`vision_system/navhat_vision.py`](vision_system/navhat_vision.py).
 
 ```text
 ┌─ NavHat PRO v6.0 ──────────────────────────────────────────┐
@@ -269,13 +214,13 @@ stateDiagram-v2
 Runs YOLOv11/v8 + IoU multi-object tracking + velocity vectors. Groups objects by category and speaks directional spatial audio (e.g., *"two people nearby on your left, one car coming toward you"*).
 
 #### `[2]` Environment Mode
-Captures a full-scene snapshot every 12 seconds and queries local **LLaVA-7B** to deliver a concise, natural description in under 15 words (e.g., *"Sunny outdoor park with a wooden bench on your right"*). Includes a Bag-of-Words Cosine similarity filter to prevent repetitive announcements when stationary.
+Captures a full-scene snapshot every 12 seconds and queries local **LLaVA-7B** to deliver a concise, natural description in under 15 words. Includes Bag-of-Words Cosine similarity deduplication to prevent repetitive chatter when stationary.
 
 #### `[3]` Hazard Guard Mode
 Strict hazard detection prioritizing high-risk obstacles (vehicles, steps, knives, construction). Triggers an urgent, interruptible tone warning if the calculated threat score exceeds $35/100$.
 
 #### `[4]` Text Reader / OCR Mode
-Applies Contrast Limited Adaptive Histogram Equalization (CLAHE) and prompts LLaVA vision to transcribe visible text, signs, room numbers, labels, or notices out loud.
+Applies CLAHE contrast normalization and prompts LLaVA vision to transcribe visible text, signs, room numbers, labels, or notices out loud.
 
 #### `[5]` Walking Assist Mode
 Segments the camera field into **5 vertical corridors** (*far left, left, center, right, far right*). Analyzes obstacle density and speaks actionable navigation guidance (e.g., *"Move right. Path clearer on your right"* or *"Stop. Obstacle directly ahead"*).
@@ -321,28 +266,54 @@ Audio cues are generated using **Microsoft Edge Neural TTS** (`en-IN-NeerjaNeura
 ```text
 NavHat-PCB-Design-main/
 │
-├── 📜 README.md                             # Master documentation & setup guide
+├── 📜 README.md                             # Master documentation (This file)
+├── 📜 LICENSE                               # MIT License
 ├── 📜 requirements.txt                      # Top-level Python dependencies
+├── 📜 .gitignore                            # Git tracking filter
+│
+├── 📁 docs/                                 # Architectural & Technical Manuals
+│   ├── 📄 ARCHITECTURE.md                   # Multi-node distributed system architecture
+│   ├── 📄 AI_MODES_DEEP_DIVE.md             # Detailed breakdown of all 5 operating modes
+│   ├── 📄 API_REFERENCE.md                  # Complete REST API specifications
+│   └── 📄 CONTRIBUTING.md                   # Open-source contributing guidelines
 │
 ├── 📁 firmware/                             # Microcontroller Source Code
-│   ├── 📁 sensor_node/
-│   │   └── 📄 sensor_node.ino               # ESP32 3x Ultrasonic + Dual Buzzer + HTTP Server
-│   └── 📁 camera_node/
-│       └── 📄 camera_node.ino               # ESP32-CAM OV7670 MJPEG Server + Web HUD (v18)
+│   ├── 📄 README.md                         # Firmware overview & FreeRTOS guide
+│   ├── 📁 sensor_node/                      # ESP32 Ultrasonic + Buzzer Node
+│   │   ├── 📄 sensor_node.ino               # Main sensor firmware sketch
+│   │   └── 📄 config.h                      # Hardware pins & threshold settings
+│   ├── 📁 camera_node/                      # ESP32-CAM (OV7670) Streamer
+│   │   ├── 📄 camera_node.ino               # Main camera firmware sketch (v18)
+│   │   └── 📄 config.h                      # Camera pinout & buffer settings
+│   └── 📁 calibration/                      # Hardware Calibration Utilities
+│       └── 📄 sensor_calibration.ino        # Serial Plotter calibration sketch
 │
 ├── 📁 vision_system/                        # Python AI Vision & Spatial Audio System
+│   ├── 📄 README.md                         # Vision system guide & benchmark instructions
 │   ├── 📄 navhat_vision.py                  # Main Python application
+│   ├── 📄 config.json                       # Central system configuration
 │   ├── 📄 model.cfg                         # YOLO model config (yolo11n.pt / yolov8n.pt)
 │   ├── 📄 requirements.txt                  # Python dependencies
 │   ├── 📄 setup.bat                         # Automated Windows installer (venv + pip)
-│   └── 📄 run.bat                           # One-click Windows launcher
+│   ├── 📄 run.bat                           # One-click Windows launcher
+│   ├── 📄 test_camera.py                    # Standalone camera stream benchmark
+│   ├── 📄 test_audio.py                     # Standalone 3D binaural spatial audio test
+│   └── 📄 test_llava.py                     # Standalone Ollama / LLaVA benchmark
 │
 ├── 📁 hardware/                             # Hardware Design Files & Renderings
-│   └── 📁 pcb/
+│   ├── 📄 BOM.md                            # Comprehensive Bill of Materials
+│   ├── 📄 WIRING_GUIDE.md                   # Step-by-step assembly & wiring instructions
+│   ├── 📄 GERBER_INSTRUCTIONS.md            # PCB manufacturing guide for JLCPCB
+│   ├── 📄 CASE_3D_PRINTING.md               # 3D printed mount & enclosure specifications
+│   └── 📁 pcb/                              # PCB Assets
 │       ├── 🖼 schematic.png                 # Fusion 360 circuit schematic
 │       ├── 🖼 pcb_layout_top.png            # 2-layer PCB trace layout
 │       ├── 🖼 pcb_3d_render.png             # 3D PCB component render
 │       └── 📄 README.md                     # Hardware design notes
+│
+├── 📁 tests/                                # Automated Unit Tests
+│   ├── 📄 test_tracker.py                   # Tests for IoU and TTC calculations
+│   └── 📄 test_threat_scorer.py             # Tests for threat calculation formula
 │
 └── 📁 .vscode/                              # IDE Workspace Configurations
     ├── 📄 settings.json                     # Linter & diagnostic rules
@@ -358,13 +329,13 @@ Anyone can build, flash, and run NavHat PRO by following these 3 simple steps:
 ### Step 1: Flash the Microcontrollers
 
 #### A. Flash ESP32 Sensor Node
-1. Open [`firmware/sensor_node/sensor_node.ino`](file:///c:/Users/krish/Downloads/NavHat-PCB-Design-main/firmware/sensor_node/sensor_node.ino) in **Arduino IDE**.
+1. Open [`firmware/sensor_node/sensor_node.ino`](firmware/sensor_node/sensor_node.ino) in **Arduino IDE**.
 2. Select **Board**: `ESP32 Dev Module`.
 3. Set your WiFi `ssid` and `password` on lines 20-21.
 4. Click **Upload** and copy the IP address printed in Serial Monitor (`115200` baud).
 
 #### B. Flash ESP32-CAM Video Node
-1. Open [`firmware/camera_node/camera_node.ino`](file:///c:/Users/krish/Downloads/NavHat-PCB-Design-main/firmware/camera_node/camera_node.ino) in **Arduino IDE**.
+1. Open [`firmware/camera_node/camera_node.ino`](firmware/camera_node/camera_node.ino) in **Arduino IDE**.
 2. Select **Board**: `AI Thinker ESP32-CAM`.
 3. Set **Partition Scheme**: `Huge APP (3MB No OTA/1MB SPIFFS)`.
 4. Connect `GPIO 0` to `GND`, press **RESET**, click **Upload**, then disconnect `GPIO 0` and reset.
@@ -385,12 +356,12 @@ Anyone can build, flash, and run NavHat PRO by following these 3 simple steps:
 ### Step 3: Run the Vision System
 
 #### Option A: Windows (1-Click Automated)
-1. Edit line 47 in [`vision_system/navhat_vision.py`](file:///c:/Users/krish/Downloads/NavHat-PCB-Design-main/vision_system/navhat_vision.py) with your ESP32-CAM IP:
-   ```python
-   ESP32_IP = "192.168.1.105" # Replace with your ESP32-CAM IP
+1. Edit `esp32_ip` in [`vision_system/config.json`](vision_system/config.json) (or line 47 in [`vision_system/navhat_vision.py`](vision_system/navhat_vision.py)) with your ESP32-CAM IP:
+   ```json
+   "esp32_ip": "192.168.1.105"
    ```
-2. Double-click [`vision_system/setup.bat`](file:///c:/Users/krish/Downloads/NavHat-PCB-Design-main/vision_system/setup.bat) to install virtualenv and dependencies.
-3. Double-click [`vision_system/run.bat`](file:///c:/Users/krish/Downloads/NavHat-PCB-Design-main/vision_system/run.bat) to launch the HUD!
+2. Double-click [`vision_system/setup.bat`](vision_system/setup.bat) to install virtualenv and dependencies.
+3. Double-click [`vision_system/run.bat`](vision_system/run.bat) to launch the HUD!
 
 #### Option B: Manual Setup (Terminal)
 ```bash
@@ -405,8 +376,23 @@ source venv/bin/activate       # Linux/macOS
 # Install required packages
 pip install -r requirements.txt
 
+# (Optional) Run hardware diagnostics
+python test_camera.py          # Benchmark camera stream
+python test_audio.py           # Test 3D spatial headphones
+python test_llava.py           # Test local LLaVA-7B AI
+
 # Run NavHat PRO
 python navhat_vision.py
+```
+
+---
+
+## 🧪 Running Automated Unit Tests
+
+Verify tracking and threat scoring algorithms locally with Python's unittest suite:
+
+```bash
+python -m unittest discover tests
 ```
 
 ---

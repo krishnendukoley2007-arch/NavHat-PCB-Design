@@ -1,0 +1,63 @@
+{
+  "camera": {
+    "esp32_ip": "10.154.74.40",
+    "stream_port": 80,
+    "stream_path": "/stream",
+    "connect_timeout_sec": 6,
+    "read_timeout_sec": 10,
+    "max_retries": 10,
+    "retry_delay_sec": 2.0,
+    "use_webcam_fallback": true,
+    "frame_width": 640,
+    "frame_height": 480
+  },
+  "yolo": {
+    "model_path": "yolo11n.pt",
+    "confidence_threshold": 0.42,
+    "iou_threshold": 0.25,
+    "max_track_age": 10
+  },
+  "ollama": {
+    "api_url": "http://localhost:11434/api/generate",
+    "model_name": "llava:7b",
+    "image_size": 336,
+    "timeout_sec": 60,
+    "scene_change_cosine_threshold": 0.72
+  },
+  "audio": {
+    "edge_tts_voice": "en-IN-NeerjaNeural",
+    "fallback_engine": "pyttsx3",
+    "pyttsx3_rate": 200,
+    "cooldown_sec": 4.0,
+    "purge_stale_sec": 60.0
+  },
+  "intervals": {
+    "navigation_sec": 4.0,
+    "environment_sec": 12.0,
+    "hazard_sec": 3.0,
+    "ocr_sec": 4.0,
+    "walking_assist_sec": 2.5
+  },
+  "threat_weights": {
+    "person": 10,
+    "car": 25,
+    "truck": 25,
+    "motorcycle": 20,
+    "bicycle": 15,
+    "bus": 25,
+    "traffic light": 10,
+    "stop sign": 8,
+    "knife": 30,
+    "scissors": 20,
+    "dog": 15,
+    "cat": 5,
+    "fire hydrant": 8,
+    "bench": 5,
+    "chair": 5
+  },
+  "walking_assist": {
+    "block_area_fraction": 0.08,
+    "critical_area_fraction": 0.18,
+    "time_to_collision_warn_sec": 3.5
+  }
+}
