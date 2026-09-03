@@ -1,0 +1,31 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Large model weights (downloaded automatically at runtime)
+*.pt
+
+# Runtime snapshots
+navhat_snapshots/*.jpg
+navhat_snapshots/*.json
+!navhat_snapshots/.gitkeep
+
+# Arduino & Build artifacts
+*.hex
+*.bin
+*.elf
+build/
+.pio/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini

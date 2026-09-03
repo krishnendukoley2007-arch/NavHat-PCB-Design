@@ -1,0 +1,11 @@
+{
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "none",
+    "reportMissingModuleSource": "none"
+  },
+  "C_Cpp.errorSquiggles": "disabled",
+  "files.associations": {
+    "*.ino": "cpp"
+  }
+}
